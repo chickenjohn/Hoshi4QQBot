@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "Hoshi-chan Assistant"
+version = "0.1.0"
+description = "Hoshi-chan Assistant"
+authors = ["chickenjohn"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+nonebot2 = "^2.0.0.a1"
+nb-cli = "^0.1.0"
+
+[tool.poetry.dev-dependencies]
+nonebot-test = "^0.1.0"
+
+[nonebot.plugins]
+plugins = ["haruka_bot"]
+# plugins = ["nonebot_hk_reporter", "nonebot_plugin_simdraw"]
+plugin_dirs = ["hoshi_chan_assistant/plugins"]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
