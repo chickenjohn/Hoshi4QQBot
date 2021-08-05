@@ -12,12 +12,15 @@ import os, os.path
 import random
 import re
 
-GRP_IDS = [str(Config(".env").cap_grp_id), str(Config(".env").adm_grp_id)]
-GACHI_GRP_ID = [str(Config(".env").adm_grp_id)]
+GRP_IDS = [str(Config(".env").cap_grp_id), str(Config(".env").adm_grp_id), str(Config(".env").grp_id)]
+GACHI_GRP_ID = [str(Config(".env").adm_grp_id), str(Config(".env").grp_id)]
 vocal_lib_path = Config(".env").vocal_lib
 
 
 async def patpat_rule(bot: Bot, event: Event, state: T_State) -> bool:
+    '''
+    detect poke notice("戳一戳")
+    '''
     event_desc = eval(event.get_event_description())
     if event_desc['post_type'] == "notice" and \
         event_desc['notice_type'] == "notify" and \
@@ -27,6 +30,7 @@ async def patpat_rule(bot: Bot, event: Event, state: T_State) -> bool:
     else:
         return False
 
+# various responser detectors with different rules
 m_responser = on("message", rule.keyword("骂") & rule.to_me(), priority=3, block=True)
 eating_responser = on("message", rule.keyword("吃掉") & rule.to_me(), priority=4)
 gachi_responser = on("message", rule.keyword("gachi") & rule.to_me(), priority=4)
@@ -38,7 +42,8 @@ hiccup_responser = on("message", rule.keyword("打嗝") & rule.to_me(), priority
 takeme_responser = on_regex(r".*带.*走.*", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 instru_responser = on_regex(r"肆乐器", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 box_responser = on("message", rule.keyword("盒皇语录") & rule.to_me(), priority=4)
-ohayo_responser = on_regex(r"(早上好|早安|早)", flags=re.UNICODE, rule=rule.to_me(), priority=4)
+ohayo_responser = on_regex(r"^(早上好|早安|早)$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
+nya_responser = on_regex(r"^(喵*)$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 self_recog_responser = on_regex(r"(?!.*是你的.*狗).*我.*是你的.{1,}", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 patpat_responser = on("notice", rule.Rule(patpat_rule) & rule.to_me(), priority=5)
 call_responser = on("message", rule.to_me(), priority=5)
@@ -95,11 +100,20 @@ async def gachi_send_response(bot: Bot, event: Event):
     sender = event.get_session_id().split("_")
     gid = sender[1] if len(sender) > 1 else '0'
     uid = sender[-1]
+    # only send gachi response in the admiral group
     if len(sender) > 1:
         for permitted_g_ids in GACHI_GRP_ID:
             if gid == permitted_g_ids:
                 await send_voice(bot, event, cmd)
                 break
+
+@nya_responser.handle()
+async def nya_send_response(bot: Bot, event: Event):
+    vocal_path = vocal_lib_path + "nya"
+    num_wavs = len([name for name in os.listdir(vocal_path)])
+    wave_id = random.randint(1, num_wavs)
+    cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
+    await send_voice(bot, event, cmd)
 
 
 @oyasumi_responser.handle()

@@ -10,7 +10,7 @@ import os, os.path
 from bilibili_api import live
 import asyncio
 
-GRP_IDS = [Config(".env").cap_grp_id]
+GRP_IDS = [Config(".env").cap_grp_id, Config(".env").grp_id]
 ADMIN_ACC = Config(".env").admin_id
 
 async def add_group_checker(bot: Bot, event: Event, state: T_State) -> bool:

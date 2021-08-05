@@ -6,20 +6,9 @@ from nonebot.adapters import Bot, Event
 from nonebot.adapters.cqhttp import utils
 from nonebot.config import Config
 from ..libs.file_reader import encode_f_to_cq
+from ..libs.customized_rules import group_member_incr_rule
 
 GRP_IDS = [str(Config(".env").cap_grp_id)]
-
-async def group_member_incr_rule(bot: Bot, event: Event, state: T_State) -> bool:
-    event_name = event.get_event_name()
-    event_desc = eval(event.get_event_description())
-    if event_name == "notice.group_increase.approve":
-        for grp in GRP_IDS:
-            if str(event_desc["group_id"]) == grp:
-                return True
-    else:
-        return False
-
-    return False
 
 async def check_if_admin(event: Event) -> bool:
     event_name = event.get_event_name()
@@ -62,7 +51,6 @@ async def records_list_resp(bot: Bot, event: Event):
             "萌娘百科：http://t.hk.uy/8TA\n" + \
             "水友歌会：http://t.hk.uy/w5C\n" + \
             "满月回：http://t.hk.uy/25N\n" + \
-            "近期连麦：http://t.hk.uy/25N\n" + \
             "歌曲切切：http://t.hk.uy/w5H\n" + \
             "日常切切：http://t.hk.uy/w5Q"
     await bot.send(event=event, message=lines)
