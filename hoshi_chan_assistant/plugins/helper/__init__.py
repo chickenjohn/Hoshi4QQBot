@@ -47,9 +47,8 @@ intro_responser = on("message", rule.keyword("自我介绍") & rule.to_me(), pri
 async def records_list_resp(bot: Bot, event: Event):
     lines = "肆录播：http://t.hk.uy/w5V\n" + \
             "爱发电：http://afdian.net/@hoshi4\n" + \
-            "提问箱：http://t.hk.uy/8TG\n" + \
             "萌娘百科：http://t.hk.uy/8TA\n" + \
-            "水友歌会：http://t.hk.uy/w5C\n" + \
+            "一起唱：http://t.hk.uy/Gfg\n" + \
             "满月回：http://t.hk.uy/25N\n" + \
             "歌曲切切：http://t.hk.uy/w5H\n" + \
             "日常切切：http://t.hk.uy/w5Q"

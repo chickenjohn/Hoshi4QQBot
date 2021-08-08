@@ -26,8 +26,8 @@ async def build_checkin_list(bot: Bot, group_id):
         db_cursor = await db_conn.execute("SELECT qid FROM checkin_table WHERE qid = ?;", (str(mem['user_id']), ))
         res = await db_cursor.fetchone()
         if res is None:
-            sql_cmd = "INSERT INTO checkin_table (qid, credit, checkin_days, con_checkin_days, curr_con_checkin_days) VALUES(:qid, :credit, :checkin_days, :con_checkin_days, :curr_con_checkin_days);"
-            insert_vals = {"qid": str(mem['user_id']), "credit": 0, "checkin_days": 0, "con_checkin_days":0, "curr_con_checkin_days":0}
+            sql_cmd = "INSERT INTO checkin_table (qid, credit, last_checkin, con_checkin_days, curr_con_checkin_days, bid, bililive_checkin, bililive_nticket) VALUES(:qid, :credit, :last_checkin, :con_checkin_days, :curr_con_checkin_days, :bid, :bililive_checkin, :bililive_nticket);"
+            insert_vals = {"qid": str(mem['user_id']), "credit": 0, "last_checkin": None, "con_checkin_days":0, "curr_con_checkin_days":0, "bid": None, "bililive_checkin": None, "bililive_nticket": None}
             db_cursor = await db_conn.execute(sql_cmd, insert_vals)
 
     await db_conn.commit()
@@ -166,6 +166,9 @@ async def update_checkin_time_dist_mn(checkin_time: dt.datetime, qid: str):
     return to_update
 
 async def update_checkin_time(checkin_time: dt.datetime, qid: str):
+    '''
+    update checkin time and related data, one time per day
+    '''
     time_fmt = "%Y-%m-%d-%H-%M-%S"
     update_cmd = '''UPDATE checkin_table 
                     SET credit = ?, 
@@ -235,7 +238,7 @@ async def check_credits(qid):
 build_checkin_list_resp = on_command("刷新积分列表", rule=rule.to_me(), priority=3, block=True)
 checkin_resp = on_regex(r"^(早上好|早安|早|脚向好|脚上好|晚上好|晚安)$", flags=re.UNICODE, priority=4)
 check_credit_resp = on_regex(r"^查积分$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
-connect_bili_id_resp = on_regex(r"^登记BID$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
+connect_bili_id_resp = on_regex(r"登记BID", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 group_member_incr_resp = on("notice", rule.Rule(group_member_incr_rule), priority=3)
 
 @group_member_incr_resp.handle()
@@ -246,10 +249,11 @@ async def group_member_incr_refresh_list(bot: Bot, event: Event):
 @build_checkin_list_resp.handle()
 async def build_checkin_list_reponse(bot: Bot, event: Event):
     print("开始刷新")
-    is_admin = check_if_admin(event)
-    print(f"admin check: {is_admin}")
-    if is_admin:
-        await build_checkin_list(bot, GRP_ID)
+    # is_admin = check_if_admin(event)
+    # print(f"admin check: {is_admin}")
+    # if is_admin:
+
+    await build_checkin_list(bot, GRP_ID)
 
 @checkin_resp.handle()
 async def morning_checkin_prod(bot: Bot, event: Event):
@@ -306,6 +310,7 @@ async def connect_bid_response(bot: Bot, event: Event):
     else:
         connect_id_response = "不对劲的b站uid！"
 
+    print(event_name)
     print(connect_id_response)
     if len(event_name) > 1 and event_name[0] == "group":
         await bot.call_api("send_msg", message=connect_id_response, group_id=event_name[1])
