@@ -22,7 +22,7 @@ def get_sche_today():
                 curr_year = curr_year.strftime('%y')
                 curr_date = datetime.datetime.strptime(row['date']+f'/{curr_year}', '%m/%d/%y')
                 if curr_date.date() == datetime.datetime.today().date():
-                    return row['start_time'], row['end_time']
+                    return row['start_time'], row['end_time'], row['content']
     except EnvironmentError:
         print(f"IO error. Non-existing file {SCHE_FILE_PATH}?")
 
@@ -44,7 +44,7 @@ ask_entire_schedule_responser = on("message", rule.keyword("排班表") & rule.t
 
 @ask_schedule_responser.handle()
 async def ask_schedule_resp(bot: Bot, event: Event):
-    start_time, end_time = get_sche_today()
+    start_time, end_time, content = get_sche_today()
     cmd = ''
     if start_time is None or end_time is None:
         cmd = '关于这周的排班，小小肆还什么都不知道！QAQ'
@@ -54,7 +54,7 @@ async def ask_schedule_resp(bot: Bot, event: Event):
         cmd = '病没好，播个p！TuT'
     else:
         cmd = f'今天预计的排班：\n' + \
-                f'上播：{start_time} 下播：{end_time}'
+                f'{start_time}至{end_time}-{content}'
 
     await bot.send(event=event, message=cmd)
 
@@ -68,13 +68,14 @@ async def ask_entire_sche_resp(bot: Bot, event: Event):
         cmd = '本周：\n'
         for d in sche_list:
             date, start, end = d['date'], d['start_time'], d['end_time']
+            content = d['content']
             cmd += f'{date}：'
             if start == 'x' or end == 'x':
                 cmd += '不播\n'
             elif start == 'b' or end == 'b':
                 cmd += '病没好，播个p！TuT\n'
             else:
-                cmd += f'{start} - {end}\n'
+                cmd += f'{start} - {end}：{content}\n'
 
     print(cmd)
     await bot.send(event=event, message=cmd)

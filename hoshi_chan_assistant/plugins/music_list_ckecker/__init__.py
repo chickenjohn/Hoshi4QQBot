@@ -14,7 +14,7 @@ from itertools import product
 def check_if_admin(event: Event) -> bool:
     event_name = event.get_event_name()
     admin_names = Config(".env").admin_id
-    grp_ids = [Config(".env").cap_grp_id, Config(".env").adm_grp_id]
+    grp_ids = [Config(".env").cap_grp_id, Config(".env").adm_grp_id, Config(".env").grp_id]
     if event_name == "message.private.friend":
         sess_id = event.get_session_id()
         

@@ -39,7 +39,7 @@ dog_responser = on("message", rule.keyword("遛狗") & rule.to_me(), priority=4)
 kuakua_responser = on("message", rule.keyword("可爱") & rule.to_me(), priority=4)
 suki_responser = on("message", rule.keyword("喜欢") & rule.to_me(), priority=4)
 hiccup_responser = on("message", rule.keyword("打嗝") & rule.to_me(), priority=4)
-takeme_responser = on_regex(r".*带.*走.*", flags=re.UNICODE, rule=rule.to_me(), priority=4)
+sq_grass_responser = on_regex(r"^挤挤草草$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 instru_responser = on_regex(r"肆乐器", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 box_responser = on("message", rule.keyword("盒皇语录") & rule.to_me(), priority=4)
 ohayo_responser = on_regex(r"^(早上好|早安|早)$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
@@ -132,12 +132,9 @@ async def dog_send_response(bot: Bot, event: Event):
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
-@takeme_responser.handle()
-async def takeme_send_response(bot: Bot, event: Event):
-    vocal_path = vocal_lib_path + "take_me_home"
-    num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
-    cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
+@sq_grass_responser.handle()
+async def sq_grass_send_response(bot: Bot, event: Event):
+    cmd = await encode_f_to_cq(vocal_lib_path + "sq_grass.wav", "record")
     await send_voice(bot, event, cmd)
 
 @box_responser.handle()
