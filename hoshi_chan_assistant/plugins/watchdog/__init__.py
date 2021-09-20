@@ -1,5 +1,6 @@
 from nonebot import on_command
 from nonebot import rule
+from nonebot.permission import NOTICE
 from nonebot.plugin import on
 from nonebot.typing import T_State
 from nonebot.adapters import Bot, Event
@@ -12,6 +13,7 @@ import asyncio
 
 GRP_IDS = [Config(".env").cap_grp_id, Config(".env").grp_id]
 ADMIN_ACC = Config(".env").admin_id
+NOTICE_GRP_ID = Config(".env").notice_grp_id
 
 async def add_group_checker(bot: Bot, event: Event, state: T_State) -> bool:
     event_name = event.get_event_name()
@@ -25,6 +27,14 @@ async def add_group_checker(bot: Bot, event: Event, state: T_State) -> bool:
     
     return False
 
+async def send_blacklist(bot: Bot, event: Event):
+    event_name = event.get_event_name().split(".")
+    if event_name[1] == "private":
+        uid = event.get_session_id()
+        with open("./data/notice_blacklist.txt", "r") as f:
+            blacklist_str = "以下都是退群的坏蛋:\n" + f.read()
+            await bot.call_api("send_msg", message=blacklist_str, user_id=uid)
+
 # async def group_member_incr_rule(bot: Bot, event: Event, state: T_State) -> bool:
 #     event_name = event.get_event_name()
 #     event_desc = eval(event.get_event_description())
@@ -37,7 +47,22 @@ async def add_group_checker(bot: Bot, event: Event, state: T_State) -> bool:
 #     else:
 #         return False
 
+async def group_member_decr_rule(bot: Bot, event: Event, state: T_State) -> bool:
+    event_name = event.get_event_name()
+    event_desc = eval(event.get_event_description())
+    group_id = event_desc['group_id']
+
+    if "notice.group_decrease" in event_name and \
+            group_id == NOTICE_GRP_ID:
+        print("group mem decrease detected!")
+        return True
+    else:
+        return False
+
 group_add_resp = on("request", rule.Rule(add_group_checker), priority=1)
+group_mem_decr_resp = on("notice", rule.Rule(group_member_decr_rule), priority=1)
+send_blacklist_resp = on("message", rule.keyword("小本本") & rule.to_me(), priority=4)
+
 # group_mem_incr = on("notice", rule.Rule(group_member_incr_rule), priority=2)
 
 def parse_captain_list(captain_list: dict):
@@ -106,3 +131,22 @@ async def first_receive(bot: Bot, event: Event):
 #     if_exists = await check_if_cap_exists(ans, bot)
 #     if if_exists:
 #         await bot.call_api("set_group_card", group_id=GRP_ID, user_id=user_id, card=ans)
+
+@group_mem_decr_resp.handle()
+async def add_blacklist(bot: Bot, event: Event):
+    event_desc = eval(event.get_event_description())
+    user_id = str(event_desc["user_id"])
+    if user_id in ADMIN_ACC:
+        print("the user left was an admin, ignore.")
+    else:
+        with open("./data/notice_blacklist.txt", "w+") as f:
+            f.write(user_id + "\n")
+
+@send_blacklist_resp.handle()
+async def send_blacklist_func(bot: Bot, event: Event):
+    sender = event.get_session_id().split("_")
+    gid = sender[1] if len(sender) > 1 else '0'
+    uid = sender[-1]
+    # only send gachi response in the admiral group
+    if gid == '0' and uid in ADMIN_ACC:
+        await send_blacklist(bot, event)

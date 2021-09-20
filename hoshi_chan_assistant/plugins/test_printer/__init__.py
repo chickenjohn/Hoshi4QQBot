@@ -6,6 +6,7 @@ from nonebot.config import Config
 from nonebot.adapters import Bot, Event
 
 printer_responser = on("message", rule.keyword("打印"), priority=5)
+ADMIN_ACC = Config(".env").admin_id
 
 @printer_responser.handle()
 async def send_printer_response(bot: Bot, event: Event):

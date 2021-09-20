@@ -9,13 +9,12 @@ from nonebot.log import logger
 from ..libs.file_reader import encode_f_to_cq
 
 import os, os.path
-import random
+import secrets
 import re
 
 GRP_IDS = [str(Config(".env").cap_grp_id), str(Config(".env").adm_grp_id), str(Config(".env").grp_id)]
 GACHI_GRP_ID = [str(Config(".env").adm_grp_id), str(Config(".env").grp_id)]
 vocal_lib_path = Config(".env").vocal_lib
-
 
 async def patpat_rule(bot: Bot, event: Event, state: T_State) -> bool:
     '''
@@ -78,7 +77,8 @@ async def send_voice(bot: Bot, event: Event, cmd: str):
 async def m_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "dirt_words"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path+f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -86,7 +86,8 @@ async def m_send_response(bot: Bot, event: Event):
 async def eating_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "eating"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path+f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -95,7 +96,8 @@ async def gachi_send_response(bot: Bot, event: Event):
     global GACHI_GRP_ID
     vocal_path = vocal_lib_path + "gachi"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     sender = event.get_session_id().split("_")
     gid = sender[1] if len(sender) > 1 else '0'
@@ -111,7 +113,8 @@ async def gachi_send_response(bot: Bot, event: Event):
 async def nya_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "nya"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -120,7 +123,8 @@ async def nya_send_response(bot: Bot, event: Event):
 async def oyasumi_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "sleeping"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -128,7 +132,8 @@ async def oyasumi_send_response(bot: Bot, event: Event):
 async def dog_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "puppy"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -141,7 +146,8 @@ async def sq_grass_send_response(bot: Bot, event: Event):
 async def box_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "essential_box"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -149,7 +155,8 @@ async def box_send_response(bot: Bot, event: Event):
 async def patpat_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "achou"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -157,7 +164,8 @@ async def patpat_send_response(bot: Bot, event: Event):
 async def instru_send_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "instru"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
@@ -185,13 +193,15 @@ async def self_recog_response(bot: Bot, event: Event):
 async def ohayo_response(bot: Bot, event: Event):
     vocal_path = vocal_lib_path + "morning"
     num_wavs = len([name for name in os.listdir(vocal_path)])
-    wave_id = random.randint(1, num_wavs)
+    secrets_gen = secrets.SystemRandom()
+    wave_id = secrets_gen.randint(1, num_wavs)
     cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
     await send_voice(bot, event, cmd)
 
 @call_responser.handle()
 async def call_send_response(bot: Bot, event: Event):
-    if_resp = random.randint(0,1)
+    secrets_gen = secrets.SystemRandom()
+    if_resp = secrets_gen.randint(0,1)
     desc = event.get_event_description()
     print(desc)
     event_name = event.get_event_name().split(".")
@@ -200,6 +210,6 @@ async def call_send_response(bot: Bot, event: Event):
         if if_resp == 1:  
             vocal_path = vocal_lib_path + "why_call_me"
             num_wavs = len([name for name in os.listdir(vocal_path)])
-            wave_id = random.randint(1, num_wavs)
+            wave_id = secrets_gen.randint(1, num_wavs)
             cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
             await send_voice(bot, event, cmd)

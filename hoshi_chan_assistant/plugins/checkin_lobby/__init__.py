@@ -257,6 +257,14 @@ async def build_checkin_list_reponse(bot: Bot, event: Event):
 
 @checkin_resp.handle()
 async def morning_checkin_prod(bot: Bot, event: Event):
+    # check if the first date of a month, if yes, freeze for 10 mins for 
+    # database update
+    def check_if_maintainess(curr_time: dt.datetime):
+        if curr_time.day == 1 and (dt.time(0,0) <= curr_time.time() < dt.time(0, 10)):
+            return True
+        else:
+            return False
+
     curr_date = dt.datetime.now()
     event_name = event.get_event_name().split(".")
     if event_name[1] == "group" and event_name[2] == "normal":
@@ -264,10 +272,13 @@ async def morning_checkin_prod(bot: Bot, event: Event):
         gid = str(sender[1])
         uid = str(sender[-1])
         if gid == GRP_ID or gid == TEST_GRP_ID:
-            res = await update_checkin_time(curr_date, uid)
-            if res:
-                cmd = str(uid) + ": 你的打卡成功啦！"
-                await bot.call_api("send_msg", message=cmd, group_id=gid)
+            if check_if_maintainess(curr_date):
+                await bot.call_api("send_msg", message="上月签到数据结算中，请0点10分后签到！", group_id=gid)
+            else:
+                res = await update_checkin_time(curr_date, uid)
+                if res:
+                    cmd = str(uid) + ": 你的打卡成功啦！"
+                    await bot.call_api("send_msg", message=cmd, group_id=gid)
 
 @check_credit_resp.handle()
 async def check_credit_response(bot: Bot, event: Event):

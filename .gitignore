@@ -146,6 +146,8 @@ cache/simdraw/
 data/danmaku/
 *.bak
 *.png
+data/notice_blacklist.txt
+data/schedule.csv
 
 # editors
 .vscode/
