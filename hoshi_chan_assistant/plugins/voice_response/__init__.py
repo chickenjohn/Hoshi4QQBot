@@ -130,12 +130,14 @@ async def oyasumi_send_response(bot: Bot, event: Event):
 
 @dog_responser.handle()
 async def dog_send_response(bot: Bot, event: Event):
-    vocal_path = vocal_lib_path + "puppy"
-    num_wavs = len([name for name in os.listdir(vocal_path)])
-    secrets_gen = secrets.SystemRandom()
-    wave_id = secrets_gen.randint(1, num_wavs)
-    cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
-    await send_voice(bot, event, cmd)
+    event_name = event.get_event_name().split(".")
+    if event_name[1] == "private":
+        vocal_path = vocal_lib_path + "puppy"
+        num_wavs = len([name for name in os.listdir(vocal_path)])
+        secrets_gen = secrets.SystemRandom()
+        wave_id = secrets_gen.randint(1, num_wavs)
+        cmd = await encode_f_to_cq(vocal_path + f"/{wave_id}.wav", "record")
+        await send_voice(bot, event, cmd)
 
 @sq_grass_responser.handle()
 async def sq_grass_send_response(bot: Bot, event: Event):

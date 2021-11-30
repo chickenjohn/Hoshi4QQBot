@@ -13,7 +13,7 @@ import asyncio
 
 GRP_IDS = [Config(".env").cap_grp_id, Config(".env").grp_id]
 ADMIN_ACC = Config(".env").admin_id
-NOTICE_GRP_ID = Config(".env").notice_grp_id
+BKWATCH_GRP_ID = [Config(".env").notice_grp_id, Config(".env").cap_grp_id]
 
 async def add_group_checker(bot: Bot, event: Event, state: T_State) -> bool:
     event_name = event.get_event_name()
@@ -40,7 +40,6 @@ async def send_blacklist(bot: Bot, event: Event):
 #     event_desc = eval(event.get_event_description())
 #     group_id = event_desc['group_id']
 
-    
 #     if event_name == "notice.group_increase.approve" and \
 #             group_id == GRP_ID:
 #         return True
@@ -53,7 +52,7 @@ async def group_member_decr_rule(bot: Bot, event: Event, state: T_State) -> bool
     group_id = event_desc['group_id']
 
     if "notice.group_decrease" in event_name and \
-            group_id == NOTICE_GRP_ID:
+            group_id in BKWATCH_GRP_ID:
         print("group mem decrease detected!")
         return True
     else:
@@ -139,7 +138,7 @@ async def add_blacklist(bot: Bot, event: Event):
     if user_id in ADMIN_ACC:
         print("the user left was an admin, ignore.")
     else:
-        with open("./data/notice_blacklist.txt", "w+") as f:
+        with open("./data/notice_blacklist.txt", "a+") as f:
             f.write(user_id + "\n")
 
 @send_blacklist_resp.handle()

@@ -26,7 +26,7 @@ def get_sche_today():
     except EnvironmentError:
         print(f"IO error. Non-existing file {SCHE_FILE_PATH}?")
 
-    return None, None
+    return None, None, None
 
 def get_sche():
     res = None

@@ -236,7 +236,7 @@ async def check_credits(qid):
     return res
 
 build_checkin_list_resp = on_command("刷新积分列表", rule=rule.to_me(), priority=3, block=True)
-checkin_resp = on_regex(r"^(早上好|早安|早|脚向好|脚上好|晚上好|晚安)$", flags=re.UNICODE, priority=4)
+checkin_resp = on_regex(r"^(早上好|早安|早|脚向好|脚上好|晚上好|晚安|藻|早|晚向好|晚上好|晚好|我爱火西肆)$", flags=re.UNICODE, priority=4)
 check_credit_resp = on_regex(r"^查积分$", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 connect_bili_id_resp = on_regex(r"登记BID", flags=re.UNICODE, rule=rule.to_me(), priority=4)
 group_member_incr_resp = on("notice", rule.Rule(group_member_incr_rule), priority=3)
